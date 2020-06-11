@@ -86,7 +86,13 @@ $(document).ready(function() {
             // Use dot notation to reference nested serializers.
             // This data: could alternatively be displayed with the serializer's ReadOnlyField as well, as seen in the minimal example.
             {"data": "artist.name", "name": "artist.name"},
-            {"data": "name"},
+            // https://github.com/izimobil/django-rest-framework-datatables/issues/86
+            // To reproduce the issue, click the 'sort' icon on the 'Full example' album name
+            {
+                "data": function (row, type, val, meta) {
+                    return row.name;
+                },
+            },
             {"data": "year"},
             {"data": "genres", "name": "genres.name", "sortable": false},
         ]

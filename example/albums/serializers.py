@@ -43,5 +43,6 @@ class AlbumSerializer(serializers.ModelSerializer):
             'DT_RowId', 'DT_RowAttr', 'rank', 'name',
             'year', 'artist_name', 'genres', 'artist',
         )
+        datatables_always_serialize = ('name',)
 
 
