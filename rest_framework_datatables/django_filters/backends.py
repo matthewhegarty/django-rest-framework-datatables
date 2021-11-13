@@ -37,7 +37,8 @@ class DatatablesFilterBackend(filters.DatatablesBaseFilterBackend,
         if global_q:
             queryset = queryset.filter(global_q).distinct()
 
-        self.set_count_after(view, queryset.count())
+        # removing this line results in a performance gain - see issue #122
+        #self.set_count_after(view, queryset.count())
 
         # TODO Can we use OrderingFilter, maybe in DatatablesFilterSet, by
         # default? See
