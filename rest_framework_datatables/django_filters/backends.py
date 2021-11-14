@@ -22,7 +22,9 @@ class DatatablesFilterBackend(filters.DatatablesBaseFilterBackend,
         if not self.check_renderer_format(request):
             return queryset
 
-        self.set_count_before(view, view.get_queryset().count())
+        # removing this line results in a performance gain - see issue #122
+        #self.set_count_before(view, view.get_queryset().count())
+        #self.set_count_before(view, queryset.count())
 
         # parsed datatables_query will be an attribute of the filterset
         filterset = self.get_filterset(request, queryset, view)
@@ -37,14 +39,21 @@ class DatatablesFilterBackend(filters.DatatablesBaseFilterBackend,
         if global_q:
             queryset = queryset.filter(global_q).distinct()
 
-        # removing this line results in a performance gain - see issue #122
-        #self.set_count_after(view, queryset.count())
+        # len(queryset) is better than count()
+        self.set_count_after(view, len(queryset))
 
         # TODO Can we use OrderingFilter, maybe in DatatablesFilterSet, by
         # default? See
         # https://django-filter.readthedocs.io/en/master/ref/filters.html#ordering-filter
         ordering = self.get_ordering(request, view, filterset)
         if ordering:
+            # MRH
+            # looks like this always results in another evaluation of the queryset
+            # I couldn't find a way to disable ordering.
+            # it seems like no matter what we always get two queries
+            # - one is the default get_queryset() on the view
+            # - second is the same call but with ordering applied.
+            # there only needs to be one?
             queryset = queryset.order_by(*ordering)
 
         return queryset
