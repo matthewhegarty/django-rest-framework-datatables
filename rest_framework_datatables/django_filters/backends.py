@@ -1,3 +1,5 @@
+import logging
+
 from django.db.models import Q
 from django_filters.rest_framework.backends import DjangoFilterBackend
 from django_filters import utils
@@ -5,6 +7,8 @@ from django_filters import utils
 from rest_framework_datatables import filters
 
 from .filterset import DatatablesFilterSet
+
+logger = logging.getLogger(__name__)
 
 
 class DatatablesFilterBackend(filters.DatatablesBaseFilterBackend,
@@ -23,6 +27,7 @@ class DatatablesFilterBackend(filters.DatatablesBaseFilterBackend,
             return queryset
 
         # removing this line results in a performance gain - see issue #122
+        logger.debug("set_count_before() disabled")
         #self.set_count_before(view, view.get_queryset().count())
         #self.set_count_before(view, queryset.count())
 
